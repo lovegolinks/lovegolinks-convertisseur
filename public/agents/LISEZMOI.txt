@@ -1,0 +1,4 @@
+Mets ici les logos des agents (format .png), avec exactement ces noms :
+acbuy, allchinabuy, basetao, cnfans, cssbuy, goonbuy, hagobuy, hipobuy, hoobuy, itaobuy,
+joyagoo, kakobuy, litbuy, mulebuy, oopbuy, pandabuy, sugargoo, superbuy, usfans, wegobuy
+Exemple : cnfans.png
