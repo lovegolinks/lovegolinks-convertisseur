@@ -103,13 +103,16 @@
   .inputrow input::placeholder { color: var(--muted); opacity: 0.8; }
   .paste { flex-shrink: 0; padding: 9px 16px; border: 0; border-radius: 999px; background: rgba(212, 168, 83, 0.18); color: var(--gold-ink); font: 600 14px "DM Sans", sans-serif; cursor: pointer; }
   .paste:hover { background: rgba(212, 168, 83, 0.3); }
+  .clear { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 999px; background: transparent; color: var(--muted); cursor: pointer; transition: background .15s, color .15s; }
+  .clear:hover { background: rgba(127, 127, 127, 0.16); color: var(--text); }
+  .clear[hidden] { display: none; }
   .go {
     display: block; width: 100%; margin-top: 10px; padding: 16px; border: 0; border-radius: 999px; background: var(--gold); color: #0a0b0e;
     font: 700 17px "DM Sans", system-ui, sans-serif; cursor: pointer; transition: background .15s, opacity .15s;
   }
   .go:hover:not(:disabled) { background: var(--gold-hover); }
   .go:disabled { opacity: 0.45; cursor: not-allowed; }
-  .btn:focus-visible, .link-btn:focus-visible, .icon-btn:focus-visible, .go:focus-visible, .paste:focus-visible, a:focus-visible, select:focus-visible {
+  .btn:focus-visible, .link-btn:focus-visible, .icon-btn:focus-visible, .go:focus-visible, .paste:focus-visible, .clear:focus-visible, a:focus-visible, select:focus-visible {
     outline: 2px solid var(--gold); outline-offset: 2px;
   }
 
@@ -183,6 +186,9 @@
     <div class="box">
       <div class="inputrow">
         <input id="input" type="text" inputmode="url" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Lien du produit" placeholder="Colle ton lien ici…" />
+        <button class="clear" id="clear" type="button" aria-label="Effacer le lien" title="Effacer" hidden>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
         <button class="paste" id="paste" type="button">Coller</button>
       </div>
       <button class="go" id="go" type="button" disabled>Convertir</button>
@@ -524,7 +530,20 @@ function run() {
   render();
 }
 
-function sync() { go.disabled = input.value.trim().length === 0; }
+function sync() {
+  const empty = input.value.trim().length === 0;
+  go.disabled = empty;
+  $("#clear").hidden = input.value.length === 0;
+}
+
+// Croix : efface le lien saisi et les résultats.
+$("#clear").addEventListener("click", () => {
+  input.value = "";
+  items = [];
+  render();
+  sync();
+  input.focus();
+});
 
 input.addEventListener("input", sync);
 input.addEventListener("paste", () => setTimeout(() => { sync(); run(); }, 0));
