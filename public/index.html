@@ -522,12 +522,27 @@ function render() {
   items.forEach((it) => out.append(card(it)));
 }
 
+// Statistiques : chaque produit converti est compté une fois par visite (aucune donnée personnelle).
+const STATS_URL = "https://lovegolinks-robot.lovegolinks.workers.dev/conv";
+const counted = new Set();
+function trackConversions(list) {
+  const ids = list.filter((it) => it.ok && !counted.has(it.id)).map((it) => it.id);
+  if (!ids.length || !STATS_URL) return;
+  ids.forEach((id) => counted.add(id));
+  try {
+    const body = JSON.stringify({ ids });
+    if (navigator.sendBeacon) navigator.sendBeacon(STATS_URL, new Blob([body], { type: "text/plain" }));
+    else fetch(STATS_URL, { method: "POST", body, keepalive: true, mode: "no-cors" }).catch(() => {});
+  } catch (e) {}
+}
+
 function run() {
   const value = input.value.trim();
   if (!value) { items = []; render(); return; }
   const links = splitLinks(value);
   items = links.length ? links.map(convertOne) : [{ ok: false, input: value, short: false }];
   render();
+  trackConversions(items);
 }
 
 function sync() {
